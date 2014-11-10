@@ -1,0 +1,13 @@
+This project makes use of Asebamedulla on linux
+the following command in a terminal will run asebamedulla
+asebamedulla "ser:name=Thymio-II" 
+
+With scratch 1.4 open and with the included scratch project
+open the python code will run and interface between the two.
+
+Python requires:
+dbus
+scratchpy
+gobject
+
+aseba also needs to be installed
