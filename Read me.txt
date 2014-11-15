@@ -11,3 +11,11 @@ scratchpy
 gobject
 
 aseba also needs to be installed
+
+to use do the following:
+1) start asebamedulla
+2)start scratch and load the .sb file
+3)using the aseba software, load the .AESL file (for leds only)
+4)run the Thymio_Interface.py
+5)answer the prompts from the python script with either a 'y' or a 'n'
+6)use scratch to control the thymio
