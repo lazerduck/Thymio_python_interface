@@ -9,31 +9,38 @@ import thread
 from optparse import OptionParser
 
 #variables
+#length of operation
 global duration
 duration = 0.5
+#speed of both wheels
 global wheelSpeed
 wheelSpeed = 500
+#individual left speed
 global Lspeed
-Lspeed = 0;
+Lspeed = 0
+#individual right speed
 global Rspeed
-Rspeed = 0;
-
+Rspeed = 0
+#is the thymio reponding to wheel speeds or commands
 global dirCont
 dirCont = False
-
+#what is the currently recieved broadcast
 global broad
 command = 'null'
-
+#moving in an arch [radius,arch_length]
+global archVar
+archVar = [0,0]
+#what sensors are we using
 accBool = False
 groundBool = False
 proxBool = False
-
+#arrays for recieving data
 proxSensorsVal=[0,0,0,0,0,0,0]
 groundDeltaVal=[0,0]
 accVal=[0,0,0]
 circLed = [0,0,0,0,0,0,0,0]
-
-commandList = ["forward","backward","left","right","null","direct","command"]
+#list of recognised commands
+commandList = ["forward","backward","left","right","null","direct","command","arch"]
 ledCircle =['circ0','circ1','circ2','circ3','circ4','circ5','circ6','circ7']
 #listen for scratch
 def scratchReceiver():
@@ -57,13 +64,25 @@ def scratchReceiver():
 	    if 'LeftSpeed' in sensor:
                 global Lspeed
                 Lspeed = sensor['LeftSpeed']
-                print 'speed set'
+                print 'Lspeed set'
                 print wheelSpeed
 	    if 'RightSpeed' in sensor:
                 global Rspeed
                 Rspeed = sensor['RightSpeed']
-                print 'speed set'
+                print 'Rspeed set'
                 print wheelSpeed
+	    if 'Radius' in sensor:
+                global archVar
+                archVar[0] = sensor['Radius']
+		if archVar[0] == 0:
+		    archVar[0] = 1
+                print 'radius set'
+                print archVar[0]
+	    if 'Length' in sensor:
+                global archVar
+                archVar[1] = sensor['Length']
+                print 'arch length set'
+                print archVar[1]
             for x in range(0,8):
                 if ledCircle[x] in sensor:
                     circLed[x] = sensor[ledCircle[x]]
@@ -73,7 +92,20 @@ def scratchReceiver():
                 if r == c:
                     global command
                     command = c
-                    if duration != 0 :
+		    if command == "arch":
+			global wheelSpeed
+			radius = abs(archVar[0])
+			archCenter = abs(archVar[1])
+			theta = float(archCenter)/float(radius)
+			archOuter = theta*(radius+5)
+			archInner = theta*(radius)
+			percent = float(archInner)/float(archOuter)
+			vel = float(wheelSpeed)*percent / float(100.0/3.0)
+			temp = vel/float(abs(archVar[1]))
+			print (1.0/temp)
+			time.sleep((1.0/temp))
+			command = 'null'
+                    elif duration != 0 :
                         time.sleep(duration)
                         command = 'null'
 def get_variables_reply_prox(r):
@@ -114,13 +146,10 @@ def thymioControl():
     if command == "direct":
 	global dirCont
 	dirCont = False
-	print 'command'
     if command == "command":
 	global dirCont
 	dirCont = True
-        print 'direct'
     global dirCont
-    print dirCont
     if dirCont == True:
         if command == "forward":
 	    network.SetVariable("thymio-II", "motor.left.target", [wheelSpeed])
@@ -138,6 +167,26 @@ def thymioControl():
             network.SendEvent(1,[])
 	    network.SetVariable("thymio-II", "motor.left.target", [0])
             network.SetVariable("thymio-II", "motor.right.target", [0])
+        elif command == "arch":
+	    #calculate the percentage difference between wheels
+	    if archVar[0] > 0:
+		radius = archVar[0]
+		archCenter = archVar[1]
+		theta = float(archCenter)/float(radius)
+		archOuter = theta*(radius+5)
+		archInner = theta*(radius-5)
+		percent = float(archInner)/float(archOuter)
+                network.SetVariable("thymio-II", "motor.left.target", [wheelSpeed*percent])
+                network.SetVariable("thymio-II", "motor.right.target", [wheelSpeed])
+	    else:
+		radius = abs(archVar[0])
+		archCenter = archVar[1]
+		theta = float(archCenter)/float(radius)
+		archOuter = theta*(radius+5)
+		archInner = theta*(radius-5)
+		percent = float(archInner)/float(archOuter)
+                network.SetVariable("thymio-II", "motor.left.target", [wheelSpeed])
+                network.SetVariable("thymio-II", "motor.right.target", [wheelSpeed*percent])
         else:
             #set the motors to 0 if there is no command
             network.SetVariable("thymio-II", "motor.left.target", [0])
