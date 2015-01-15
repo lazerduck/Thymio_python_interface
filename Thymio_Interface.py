@@ -209,7 +209,11 @@ if __name__ == '__main__':
     print 'use acceleration sensors: '
     if sys.stdin.read(1) == 'y':
         accBool = True
-    s = scratch.Scratch(host = 'localhost')
+
+    #ask the user for the address of scratch
+    host = raw_input("What is the IP address of scratch?")
+    
+    s = scratch.Scratch(host = host)
     s.sensorupdate({'prox0': '0', 'prox1': '0','prox2': '0','prox3': '0','prox4': '0','prox5': '0','prox6':'0','delta0':'0','delta1':'0','acc0':'0','acc1':'0','acc2':'0'})
 
     parser = OptionParser()
