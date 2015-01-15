@@ -27,9 +27,9 @@ dirCont = False
 #what is the currently recieved broadcast
 global broad
 command = 'null'
-#moving in an arch [radius,arch_length]
-global archVar
-archVar = [0,0]
+#moving in an arc [radius,arc_length]
+global arcVar
+arcVar = [0,0]
 #what sensors are we using
 accBool = False
 groundBool = False
@@ -40,7 +40,7 @@ groundDeltaVal=[0,0]
 accVal=[0,0,0]
 circLed = [0,0,0,0,0,0,0,0]
 #list of recognised commands
-commandList = ["forward","backward","left","right","null","direct","command","arch"]
+commandList = ["forward","backward","left","right","null","direct","command","arc"]
 ledCircle =['circ0','circ1','circ2','circ3','circ4','circ5','circ6','circ7']
 #listen for scratch
 def scratchReceiver():
@@ -72,17 +72,17 @@ def scratchReceiver():
                 print 'Rspeed set'
                 print wheelSpeed
 	    if 'Radius' in sensor:
-                global archVar
-                archVar[0] = sensor['Radius']
-		if archVar[0] == 0:
-		    archVar[0] = 1
+                global arcVar
+                arcVar[0] = sensor['Radius']
+		if arcVar[0] == 0:
+		    arcVar[0] = 1
                 print 'radius set'
-                print archVar[0]
+                print arcVar[0]
 	    if 'Length' in sensor:
-                global archVar
-                archVar[1] = sensor['Length']
-                print 'arch length set'
-                print archVar[1]
+                global arcVar
+                arcVar[1] = sensor['Length']
+                print 'arc length set'
+                print arcVar[1]
             for x in range(0,8):
                 if ledCircle[x] in sensor:
                     circLed[x] = sensor[ledCircle[x]]
@@ -92,16 +92,16 @@ def scratchReceiver():
                 if r == c:
                     global command
                     command = c
-		    if command == "arch":
+		    if command == "arc":
 			global wheelSpeed
-			radius = abs(archVar[0])
-			archCenter = abs(archVar[1])
-			theta = float(archCenter)/float(radius)
-			archOuter = theta*(radius+5)
-			archInner = theta*(radius)
-			percent = float(archInner)/float(archOuter)
+			radius = abs(arcVar[0])
+			arcCenter = abs(arcVar[1])
+			theta = float(arcCenter)/float(radius)
+			arcOuter = theta*(radius+5)
+			arcInner = theta*(radius)
+			percent = float(arcInner)/float(arcOuter)
 			vel = float(wheelSpeed)*percent / float(100.0/3.0)
-			temp = vel/float(abs(archVar[1]))
+			temp = vel/float(abs(arcVar[1]))
 			print (1.0/temp)
 			time.sleep((1.0/temp))
 			command = 'null'
@@ -167,24 +167,24 @@ def thymioControl():
             network.SendEvent(1,[])
 	    network.SetVariable("thymio-II", "motor.left.target", [0])
             network.SetVariable("thymio-II", "motor.right.target", [0])
-        elif command == "arch":
+        elif command == "arc":
 	    #calculate the percentage difference between wheels
-	    if archVar[0] > 0:
-		radius = archVar[0]
-		archCenter = archVar[1]
-		theta = float(archCenter)/float(radius)
-		archOuter = theta*(radius+5)
-		archInner = theta*(radius-5)
-		percent = float(archInner)/float(archOuter)
+	    if arcVar[0] > 0:
+		radius = arcVar[0]
+		arcCenter = arcVar[1]
+		theta = float(arcCenter)/float(radius)
+		arcOuter = theta*(radius+5)
+		arcInner = theta*(radius-5)
+		percent = float(arcInner)/float(arcOuter)
                 network.SetVariable("thymio-II", "motor.left.target", [wheelSpeed*percent])
                 network.SetVariable("thymio-II", "motor.right.target", [wheelSpeed])
 	    else:
-		radius = abs(archVar[0])
-		archCenter = archVar[1]
-		theta = float(archCenter)/float(radius)
-		archOuter = theta*(radius+5)
-		archInner = theta*(radius-5)
-		percent = float(archInner)/float(archOuter)
+		radius = abs(arcVar[0])
+		arcCenter = arcVar[1]
+		theta = float(arcCenter)/float(radius)
+		arcOuter = theta*(radius+5)
+		arcInner = theta*(radius-5)
+		percent = float(arcInner)/float(arcOuter)
                 network.SetVariable("thymio-II", "motor.left.target", [wheelSpeed])
                 network.SetVariable("thymio-II", "motor.right.target", [wheelSpeed*percent])
         else:
