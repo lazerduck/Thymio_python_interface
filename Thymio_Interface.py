@@ -209,7 +209,7 @@ if __name__ == '__main__':
     print 'use acceleration sensors: '
     if sys.stdin.read(1) == 'y':
         accBool = True
-
+    sys.stdin.read(1)
     #ask the user for the address of scratch
     host = raw_input("What is the IP address of scratch?")
     
