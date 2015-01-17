@@ -103,10 +103,10 @@ def scratchReceiver():
 			vel = float(wheelSpeed)*percent / float(100.0/3.0)
 			temp = vel/float(abs(arcVar[1]))
 			print (1.0/temp)
-			time.sleep((1.0/temp))
+			time.sleep(abs(1.0/temp))
 			command = 'null'
                     elif duration != 0 :
-                        time.sleep(duration)
+                        time.sleep(abs(duration))
                         command = 'null'
 def get_variables_reply_prox(r):
     global proxSensorsVal
