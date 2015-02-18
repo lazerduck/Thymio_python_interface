@@ -35,9 +35,14 @@ circLed = [0,0,0,0,0,0,0,0]
 #list of recognised commands
 commandList = ["forward","backward","left","right","null","direct","command","arc"]
 ledCircle =['circ0','circ1','circ2','circ3','circ4','circ5','circ6','circ7']
+#strign to store commands sent
+f = open('data.txt','w')
+f.write("Data\n")
+lastsent = ""
 
 #listen for scratch
 def scratchReceiver():
+    global f
     while True:
         res = s.receive()
         #print res
@@ -52,22 +57,26 @@ def scratchReceiver():
 		else:
                     duration = sensor['duration']
                 print 'duration set'
+		f.write(" V:duration") 
                 print duration
 		s.sensorupdate({'duration':duration})
             if 'speed' in sensor:
                 global wheelSpeed
                 wheelSpeed = sensor['speed']
                 print 'speed set'
+		f.write(" V:speed")
                 print wheelSpeed
 	    if 'LeftSpeed' in sensor:
                 global Lspeed
                 Lspeed = sensor['LeftSpeed']
                 print 'Lspeed set'
+		f.write(" V:Lspeed")
                 print Lspeed
 	    if 'RightSpeed' in sensor:
                 global Rspeed
                 Rspeed = sensor['RightSpeed']
                 print 'Rspeed set'
+		f.write(" V:Rspeed")
                 print Rspeed
 	    if 'Radius' in sensor:
                 global arcVar
@@ -77,10 +86,12 @@ def scratchReceiver():
     		if arcVar[0] < 0 and arcVar[0] > -1:
 		    arcVar[0] = -1
                 print 'radius set'
+		f.write(" V:radius")
                 print arcVar[0]
 	    if 'Length' in sensor:
                 arcVar[1] = sensor['Length']
                 print 'arc length set'
+		f.write(" V:length")
                 print arcVar[1]
             for x in range(0,8):
                 if ledCircle[x] in sensor:
@@ -90,7 +101,13 @@ def scratchReceiver():
             for c in commandList:
                 if r == c:
                     global command
+		    global lastsent
                     command = c
+		    if lastsent == c:
+		  	lastsent = c
+		    else:
+		        lastsent=c
+		        f.write(" C:" + c)
 		    if command == "arc":
 			radius = abs(arcVar[0])
 			arcCenter = abs(arcVar[1])
