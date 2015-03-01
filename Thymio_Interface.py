@@ -102,24 +102,28 @@ def scratchReceiver():
                 if r == c:
                     global command
 		    global lastsent
-                    command = c
-		    if lastsent == c:
-		  	lastsent = c
+		    if duration == 0:
+			if lastsent == c:
+			    print 'repeat 0 command'
+			else:
+			    command = c
 		    else:
-		        lastsent=c
-		        f.write(" C:" + c)
+                        command = c
+		    
+		    lastsent=c
+		    f.write(" C:" + c)
 		    if command == "arc":
-			radius = abs(arcVar[0])
-			arcCenter = abs(arcVar[1])
-			theta = float(arcCenter)/float(radius)
-			arcOuter = theta*(radius+5)
-			arcInner = theta*(radius)
-			percent = float(arcInner)/float(arcOuter)
-			vel = float(wheelSpeed)*percent / float(100.0/3.0)
-			temp = vel/float(abs(arcVar[1]))
-			print (1.0/temp)
-			time.sleep(abs(1.0/temp))
-			command = 'null'
+		        radius = abs(arcVar[0])
+		        arcCenter = abs(arcVar[1])
+		        theta = float(arcCenter)/float(radius)
+		        arcOuter = theta*(radius+5)
+		        arcInner = theta*(radius)
+		        percent = float(arcInner)/float(arcOuter)
+		        vel = float(wheelSpeed)*percent / float(100.0/3.0)
+		        temp = vel/float(abs(arcVar[1]))
+		        print (1.0/temp)
+                        time.sleep(abs(1.0/temp))
+		        command = 'null'
                     elif duration != 0 :
                         time.sleep(abs(duration))
                         command = 'null'
